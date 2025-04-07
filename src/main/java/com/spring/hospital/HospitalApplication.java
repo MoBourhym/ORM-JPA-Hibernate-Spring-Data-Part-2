@@ -1,17 +1,14 @@
 package com.spring.hospital;
 
-import com.spring.hospital.Repositories.ConsultationRepository;
-import com.spring.hospital.Repositories.MedecineRepository;
-import com.spring.hospital.Repositories.PatientRepository;
-import com.spring.hospital.Repositories.RendezVousRepository;
 import com.spring.hospital.entities.*;
+import com.spring.hospital.service.IHospitalService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 
 @SpringBootApplication
@@ -22,54 +19,57 @@ public class HospitalApplication {
     }
 
     @Bean
-    CommandLineRunner start(PatientRepository patientRepository, MedecineRepository medecineRepository, RendezVousRepository rendezVousRepository, ConsultationRepository consultationRepository) {
-
+    CommandLineRunner start(IHospitalService hospitalService) {
         return args -> {
-            Stream.of("Sami", "Imad", "Imane","Alae","Kawtar","Nour").forEach(name -> {
+
+            System.out.println("▶ Saving Patients...");
+            Stream.of("Sami", "Imad", "Imane", "Alae", "Kawtar", "Nour").forEach(name -> {
                 Patient patient = new Patient();
                 patient.setNom(name);
-                patient.setMalade(true);
+                patient.setMalade(Math.random() > 0.5);
                 patient.setDateNaissance(new Date());
-                patientRepository.save(patient);
-
+                hospitalService.savePatient(patient);
             });
 
-
-            Stream.of("Khouloud","Ayman","Leila","Ayoub","Yahya").forEach(name -> {
+            System.out.println("▶ Saving Medecins...");
+            Stream.of("Khouloud", "Ayman", "Leila", "Ayoub", "Yahya").forEach(name -> {
                 Medecin medecin = new Medecin();
                 medecin.setNom(name);
-                medecin.setEmail(name+"Wgmail.com");
-                medecin.setSpecialite(Math.random()>0.5?"Cardio":"Dentiste");
-                medecineRepository.save(medecin);
+                medecin.setEmail(name + "@gmail.com");
+                medecin.setSpecialite(Math.random() > 0.5 ? "Cardiologue" : "Dentiste");
+                hospitalService.saveMedecin(medecin);
             });
 
-            Patient patient = patientRepository.findById(1L).orElse(null);
-            Patient patient2 = patientRepository.findByNom("Sami");
+            // Get a known patient and medecin
+            Patient patient = hospitalService.getPatientByNom("Sami");
+            Medecin medecin = hospitalService.getMedecinByNom("Yahya");
 
-            Medecin medecin = medecineRepository.findMedecinByNom("Yahya");
+            if (patient != null && medecin != null) {
+                System.out.println("▶ Creating a RendezVous...");
+                RendezVous rendezVous = new RendezVous();
+                rendezVous.setDate(new Date());
+                rendezVous.setMedecin(medecin);
+                rendezVous.setPatient(patient);
+                rendezVous.setStatus(StatusRDV.PENDING);
+                RendezVous savedRDV = hospitalService.saveRDV(rendezVous);
 
-            RendezVous rendezVous=new RendezVous();
-            rendezVous.setDate(new Date());
-            rendezVous.setMedecin(medecin);
-            rendezVous.setStatus(StatusRDV.PENDING);
-            rendezVous.setPatient(patient);
+                System.out.println("▶ Creating Consultation...");
+                Consultation consultation = new Consultation();
+                consultation.setDate(new Date());
+                consultation.setRendezVous(savedRDV);
+                consultation.setRapport("Rapport de la consultation initiale.");
+                hospitalService.saveConsultation(consultation);
+                System.out.println("✅ Consultation saved successfully.");
+            } else {
+                System.out.println("❌ Patient or Medecin not found. Cannot create RendezVous.");
+            }
 
-            rendezVousRepository.save(rendezVous);
+            System.out.println("▶ Listing all patients:");
+            List<Patient> patients = hospitalService.getAllPatients();
+            patients.forEach(p -> System.out.println("🧍 Patient: " + p.getNom() + ", malade: " + p.isMalade()));
 
-           RendezVous rendezVous1=rendezVousRepository.findById(1L).orElse(null);
-           Consultation consultation=new Consultation();
-           consultation.setDate(new Date());
-           consultation.setRendezVous(rendezVous1);
-
-           consultation.setRapport("Rapport de la consultation---------");
-           consultationRepository.save(consultation);
+            System.out.println("▶ Listing all medecins:");
+            hospitalService.getAllMedecins().forEach(m -> System.out.println("👨‍⚕️ Medecin: " + m.getNom() + ", spécialité: " + m.getSpecialite()));
         };
-
-
-
-    };
-
-
-
-
+    }
 }

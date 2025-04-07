@@ -11,16 +11,21 @@ import com.spring.hospital.entities.RendezVous;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
 public class HospitalServiceImpl implements IHospitalService {
-    private PatientRepository patientRepository;
-    private ConsultationRepository consultationRepository;
-    private MedecineRepository medecinRepository;
-    private RendezVousRepository rendezVousRepository;
+    private final PatientRepository patientRepository;
+    private final ConsultationRepository consultationRepository;
+    private final MedecineRepository medecinRepository;
+    private final RendezVousRepository rendezVousRepository;
 
-    public HospitalServiceImpl(PatientRepository patientRepository, ConsultationRepository consultationRepository, MedecineRepository medecinRepository, RendezVousRepository rendezVousRepository) {
+    public HospitalServiceImpl(PatientRepository patientRepository,
+                               ConsultationRepository consultationRepository,
+                               MedecineRepository medecinRepository,
+                               RendezVousRepository rendezVousRepository) {
         this.patientRepository = patientRepository;
         this.consultationRepository = consultationRepository;
         this.medecinRepository = medecinRepository;
@@ -45,5 +50,50 @@ public class HospitalServiceImpl implements IHospitalService {
     @Override
     public Consultation saveConsultation(Consultation consultation) {
         return consultationRepository.save(consultation);
+    }
+
+    @Override
+    public Patient getPatientById(Long id) {
+        return patientRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Patient getPatientByNom(String nom) {
+        return patientRepository.findByNom(nom);
+    }
+
+    @Override
+    public List<Patient> getAllPatients() {
+        return patientRepository.findAll();
+    }
+
+    @Override
+    public void deletePatient(Long id) {
+        patientRepository.deleteById(id);
+    }
+
+    @Override
+    public Medecin getMedecinByNom(String nom) {
+        return medecinRepository.findMedecinByNom(nom);
+    }
+
+    @Override
+    public List<Medecin> getAllMedecins() {
+        return medecinRepository.findAll();
+    }
+
+    @Override
+    public RendezVous getRendezVousById(Long id) {
+        return rendezVousRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<RendezVous> getRDVByPatientId(Long patientId) {
+        return rendezVousRepository.findByPatientId(patientId);
+    }
+
+    @Override
+    public List<Consultation> getAllConsultations() {
+        return consultationRepository.findAll();
     }
 }
