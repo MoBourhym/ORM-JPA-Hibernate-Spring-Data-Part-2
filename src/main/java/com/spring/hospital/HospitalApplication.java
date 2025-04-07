@@ -1,12 +1,10 @@
 package com.spring.hospital;
 
+import com.spring.hospital.Repositories.ConsultationRepository;
 import com.spring.hospital.Repositories.MedecineRepository;
 import com.spring.hospital.Repositories.PatientRepository;
 import com.spring.hospital.Repositories.RendezVousRepository;
-import com.spring.hospital.entities.Medecin;
-import com.spring.hospital.entities.Patient;
-import com.spring.hospital.entities.RendezVous;
-import com.spring.hospital.entities.StatusRDV;
+import com.spring.hospital.entities.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,7 +22,7 @@ public class HospitalApplication {
     }
 
     @Bean
-    CommandLineRunner start(PatientRepository patientRepository, MedecineRepository medecineRepository, RendezVousRepository rendezVousRepository) {
+    CommandLineRunner start(PatientRepository patientRepository, MedecineRepository medecineRepository, RendezVousRepository rendezVousRepository, ConsultationRepository consultationRepository) {
 
         return args -> {
             Stream.of("Sami", "Imad", "Imane","Alae","Kawtar","Nour").forEach(name -> {
@@ -57,6 +55,14 @@ public class HospitalApplication {
             rendezVous.setPatient(patient);
 
             rendezVousRepository.save(rendezVous);
+
+           RendezVous rendezVous1=rendezVousRepository.findById(1L).orElse(null);
+           Consultation consultation=new Consultation();
+           consultation.setDate(new Date());
+           consultation.setRendezVous(rendezVous1);
+
+           consultation.setRapport("Rapport de la consultation---------");
+           consultationRepository.save(consultation);
         };
 
 
