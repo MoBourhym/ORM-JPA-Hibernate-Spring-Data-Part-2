@@ -1,0 +1,44 @@
+# Maven
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
+# IDEs
+## IntelliJ
+.idea/
+*.iml
+*.iws
+out/
+
+## VS Code
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# Dependency caching
+.mvn/
+.mvn/wrapper/maven-wrapper.properties
+
+# Java build system
+*.class
+
+# Spring Boot specific
+spring.log
+
+# Eclipse
+*.classpath
+*.project
+*.settings/
+
+# JAR/WAR
+*.jar
+*.war
+*.ear
