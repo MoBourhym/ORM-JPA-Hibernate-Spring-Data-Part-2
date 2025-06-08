@@ -1,4 +1,4 @@
-# Rapport TP - ORM JPA Hibernate Spring Data - Partie 3
+# Rapport TP - ORM JPA Hibernate Spring Data - Partie 2
 
 ## 📋 Description du Projet
 
